@@ -5,6 +5,7 @@ import cate3 from '../../assets/cate-3.png'
 import cate4 from '../../assets/cate-4.png'
 import cate5 from '../../assets/cate-5.png'
 import cate6 from '../../assets/cate-6.png'
+//import '../../index.css'
 
 const categories = [
     {title: 'Personal', image: cate1},
@@ -17,12 +18,12 @@ const categories = [
 
 const Index = () => {
     const [tasks, setTasks] = useState(() => JSON.parse(localStorage.getItem('tasks')) || []);
-    const [showAddTask, setshowAddTask] = useState(false);
+    const [showAddTask, setShowAddTask] = useState(false);
     const [inputTask, setInputTask] = useState('');
-    const[taskCategory, settaskCategory] = useState('Personal');
+    const[taskCategory, setTaskCategory] = useState('Personal');
     const [selectedCategory, setselectedCategory] = useState('All');
-    const [tasktoDelete, settasktoDelete] = useState('null');
-    const [showConfirmModal, setshowConfirmModal] = useState('false');
+    const [taskToDelete, setTaskToDelete] = useState('null');
+    const [showConfirmModal, setShowConfirmModal] = useState('false');
 
     useEffect(() => {
         localStorage.setItem('task', JSON.stringify(tasks));
@@ -45,17 +46,169 @@ const Index = () => {
         setTasks([...tasks, newTask]);
 
         setInputTask('');
-        setshowAddTask(false);
+        setShowAddTask(false);
     };
 
     const confirmDeleteTask = (index) => {
-        settasktoDelete(index);
-        
-    }
+        setTaskToDelete(index);
+        setShowConfirmModal(true);
+    };
+    const handleDeleteTask = () => {
+        if(taskToDelete !== null ){
+            const updated = [...tasks];
+            updated.splice(taskToDelete, 1);
+            setTasks(updated);
+        }
+        setTaskToDelete(null);
+        setShowConfirmModal(false);
+    };
+    const countByCategory = (cat) => tasks.filter((t) => t.category === cat).length;
 
+    const filteredTask = 
+          selectedCategory === 'All'
+          ? tasks
+          : tasks.filter((t) => t.category === selectedCategory);
+          
   return (
-    <div>Index</div>
-  )
-}
+        <main className="main-container">
+            <div className="row g-4">
+                {categories.map((cat) => (
+                    <div 
+                    className="col-sm-6 col-lg-4"
+                    key={cat.title}
+                    onClick={() => setselectedCategory(cat.title)}
+                    style={{cursor: 'pointer'}}               
+                    >
+                        <div className="d-flex align-items-center p-3 shadow-sm bg-white rounded">
+                            <img src={cat.image} 
+                                 alt={cat.title}
+                                 width={60}
+                                 height={60}
+                                 className="me-3" 
+                                 />
+                                 <div>
+                                    <h5 className="mb-0">{cat.title}</h5>
+                                    <small className="text-muted">
+                                        {countByCategory(cat.title)} Task
+                                    </small>
+                                 </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            <div className="mt-5 bg-white shadow rounded">
+                <div className="d-flex justify-content-between align-items-center p-3 bg-warning round-top">
+                    <h5 className="mb-0">
+                        {selectedCategory} Task ({filteredTask.length})
+                    </h5>
+                    <div>
+                        <button 
+                        className='btn btn-sm btn-outline-dark me-2' 
+                        onClick={() => setselectedCategory('All')}
+                        >All Tasks
+                        </button>
+                        <button 
+                        className='btn btn-sm btn-dark' 
+                        onClick={() => setShowAddTask(true)}
+                        > <i className="ri-add-line"></i> Add 
+                        </button>
+                    </div>
+                </div>
+                <ul className="list-group list-group-flush task-list-container">
+                    {filteredTask.length === 0 ? (
+            <li className="no-task p-3 text-center text-muted">No Task Available.</li>
+                    ): (
+                        filteredTask.map((task, idx) => (
+                            <li className="list-group-item d-flex justify-content-between align-items-start py-3 px-3 rounded mb-2 shadow-sm task-item"
+                            key={idx}>
+                                <div>
+                                <span className="fw-semibold">{task.text}</span>
+                                <br/>
+                                <small className="text-muted">Added on: {formatDate(task.date)}</small>
+                                </div>
+                                <i 
+                                    className="ri-delete-bin-line text-danger fs-5"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => confirmDeleteTask(task.indexOf(task))}
+                                ></i>
+                            </li>
+                        ))
+                    )}
+                </ul>
+            </div>
+            {showAddTask && (
+                <>
+                <div 
+                className="position-fixed top-0 w-100 h-100"
+                style={{
+                    zIndex: 1000,
+                }}
+                onClick={() => setShowAddTask(false)}
+                ></div>
+                <div 
+                className="position-fixed top-50 start-50 translate-middle bg-light p-4 rounded shadow"
+                style={{width: '90%', maxWidth: '400px', zIndex: 1001}}
+                >
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="mb-0">Add task</h5>
+                <i className="ri-close-line fs-4"
+                style={{cursor: 'pointer'}}
+                onClick={() => setShowAddTask(false)}
+                ></i>
+                </div>
+                <input type="text" 
+                       className="form-control mb-3"
+                       placeholder='Enter task'
+                       value={inputTask}
+                       onChange={(e) => setInputTask(e.target.value)}
+                       onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+                       autoFocus 
+                />
+                <select 
+                    className="form-select mb-3"
+                    value={taskCategory}
+                    onChange={(e) => setTaskCategory(e.target.value)}
+                    >
+                       {categories.map((cat) => (
+                        <option key={cat.title} value={cat.title}>
+                            {cat.title}
+                        </option>
+                       ))} 
+                    </select>
+                    <button className="btn btn-warning w-100" onClick={handleAddTask}>
+                        Add Task 
+                    </button>
+                </div>
+                </>
+            )}
+            {showConfirmModal && (
+                <>
+                <div 
+                className="position-fixed top-0 start-0 w-100 h-100"
+                style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1050}}
+                onClick={() => setShowConfirmModal(false)}
+                >
+                    <div 
+                        className="position-fixed top-50 start-50 translate-middle bg-white p-4 rounded shadow"
+                        style={{width: '90%', maxWidth: '320px', zIndex: 1051, textAlign: 'center'}}
+                    >
+                        <p className="modal-text my-3">You sure you want to delete task?</p>
+                        <div className="d-flex justify-content-center gap-3">
+                            <button 
+                                className="btn btn-danger"
+                                onClick={handleDeleteTask}
+                            >Delete</button>
+                             <button 
+                                className="btn btn-secondary"
+                                onClick={setShowConfirmModal(false)}
+                            >Cancel</button>
+                        
+                        </div>
+                    </div>
+                </div>
+                </>
+            )}
+        </main>
+  )}
 
 export default Index
