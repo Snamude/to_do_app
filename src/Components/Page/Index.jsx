@@ -22,11 +22,11 @@ const Index = () => {
     const [inputTask, setInputTask] = useState('');
     const[taskCategory, setTaskCategory] = useState('Personal');
     const [selectedCategory, setselectedCategory] = useState('All');
-    const [taskToDelete, setTaskToDelete] = useState('null');
-    const [showConfirmModal, setShowConfirmModal] = useState('false');
+    const [taskToDelete, setTaskToDelete] = useState(null); 
+    const [showConfirmModal, setShowConfirmModal] = useState(false); 
 
     useEffect(() => {
-        localStorage.setItem('task', JSON.stringify(tasks));
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }, [tasks]);
 
     const formatDate = (date) => {
@@ -129,7 +129,8 @@ const Index = () => {
                                 <i 
                                     className="ri-delete-bin-line text-danger fs-5"
                                     style={{ cursor: 'pointer' }}
-                                    onClick={() => confirmDeleteTask(task.indexOf(task))}
+                                    // CORRECTED LINE: Pass the 'idx' directly
+                                    onClick={() => confirmDeleteTask(idx)} 
                                 ></i>
                             </li>
                         ))
@@ -186,11 +187,12 @@ const Index = () => {
                 <div 
                 className="position-fixed top-0 start-0 w-100 h-100"
                 style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1050}}
-                onClick={() => setShowConfirmModal(false)}
+                onClick={() => setShowConfirmModal(false)} 
                 >
                     <div 
                         className="position-fixed top-50 start-50 translate-middle bg-white p-4 rounded shadow"
                         style={{width: '90%', maxWidth: '320px', zIndex: 1051, textAlign: 'center'}}
+                        onClick={(e) => e.stopPropagation()} 
                     >
                         <p className="modal-text my-3">You sure you want to delete task?</p>
                         <div className="d-flex justify-content-center gap-3">
@@ -200,7 +202,8 @@ const Index = () => {
                             >Delete</button>
                              <button 
                                 className="btn btn-secondary"
-                                onClick={setShowConfirmModal(false)}
+                                
+                                onClick={() => setShowConfirmModal(false)} 
                             >Cancel</button>
                         
                         </div>
@@ -209,6 +212,7 @@ const Index = () => {
                 </>
             )}
         </main>
-  )}
+  )
+}
 
 export default Index
