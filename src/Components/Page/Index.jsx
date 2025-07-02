@@ -9,7 +9,7 @@ import cate6 from '../../assets/cate-6.png'
 
 const categories = [
     {title: 'Personal', image: cate1},
-    {title: 'work', image: cate2},
+    {title: 'Work', image: cate2},
     {title: 'Shopping', image: cate3},
     {title: 'Coding', image: cate4},
     {title: 'Health', image: cate5},
@@ -116,10 +116,10 @@ const Index = () => {
                 </div>
                 <ul className="list-group list-group-flush task-list-container">
                     {filteredTask.length === 0 ? (
-            <li className="no-task p-3 text-center text-muted">No Task Available.</li>
+            <li className="p-3 m-1 text-center text-muted">No Task Available.</li>
                     ): (
                         filteredTask.map((task, idx) => (
-                            <li className="list-group-item d-flex justify-content-between align-items-start py-3 px-3 rounded mb-2 shadow-sm task-item"
+                            <li className="list-group-item d-flex justify-content-between align-items-start py-2 px-3 my-3 mx-2 rounded mb-2 shadow-sm task-item"
                             key={idx}>
                                 <div>
                                 <span className="fw-semibold">{task.text}</span>
@@ -129,8 +129,7 @@ const Index = () => {
                                 <i 
                                     className="ri-delete-bin-line text-danger fs-5"
                                     style={{ cursor: 'pointer' }}
-                                    // CORRECTED LINE: Pass the 'idx' directly
-                                    onClick={() => confirmDeleteTask(idx)} 
+                                    onClick={() => confirmDeleteTask(tasks.indexOf(task))} 
                                 ></i>
                             </li>
                         ))
@@ -192,7 +191,7 @@ const Index = () => {
                     <div 
                         className="position-fixed top-50 start-50 translate-middle bg-white p-4 rounded shadow"
                         style={{width: '90%', maxWidth: '320px', zIndex: 1051, textAlign: 'center'}}
-                        onClick={(e) => e.stopPropagation()} 
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <p className="modal-text my-3">You sure you want to delete task?</p>
                         <div className="d-flex justify-content-center gap-3">
